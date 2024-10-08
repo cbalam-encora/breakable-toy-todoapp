@@ -1,8 +1,11 @@
+import { Button } from "@/components/ui/button"
+
+
 function App() {
 
   return (
     <>
-     Hello spark!
+     <Button>Click me</Button>
     </>
   )
 }
