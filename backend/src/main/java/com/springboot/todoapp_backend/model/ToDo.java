@@ -7,7 +7,7 @@ public class ToDo {
     private final String id;
     private String text;
     private LocalDate dueDate;
-    private boolean done;
+    private boolean isDone;
     private LocalDate doneDate;
     private Priority priority;
     private final LocalDate creationDate;
@@ -20,7 +20,7 @@ public class ToDo {
         this.id = UUID.randomUUID().toString();
         this.text = text;
         this.dueDate = null;
-        this.done = false;
+        this.isDone = false;
         this.doneDate = null;
         this.priority = priority;
         this.creationDate = LocalDate.now();
@@ -30,7 +30,7 @@ public class ToDo {
         this.id = UUID.randomUUID().toString();
         this.text = text;
         this.dueDate = dueDate;
-        this.done = false;
+        this.isDone = false;
         this.doneDate = null;
         this.priority = priority;
         this.creationDate = LocalDate.now();
@@ -57,11 +57,11 @@ public class ToDo {
     }
 
     public boolean isDone() {
-        return done;
+        return isDone;
     }
 
     public void setDone(boolean done) {
-        this.done = done;
+        isDone = done;
     }
 
     public LocalDate getDoneDate() {

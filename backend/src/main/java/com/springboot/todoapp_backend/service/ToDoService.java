@@ -1,23 +1,21 @@
 package com.springboot.todoapp_backend.service;
 
 import com.springboot.todoapp_backend.dtos.ToDoDTO;
+import com.springboot.todoapp_backend.dtos.ToDoUpdateDTO;
 import com.springboot.todoapp_backend.model.ToDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ToDoService {
     private static final Logger logger = LoggerFactory.getLogger(ToDoService.class);
 
-    private List<ToDo> toDoList;
+    private final List<ToDo> toDoList;
 
     public ToDoService(){
         this.toDoList = new ArrayList<>();
@@ -35,7 +33,7 @@ public class ToDoService {
         return optional;
     }
 
-    public List<ToDo> getItemList(
+    public List<ToDo> getFilteredList(
             Optional<String> text,
             Optional<ToDo.Priority> priority,
             Optional<Boolean> done,
@@ -73,25 +71,25 @@ public class ToDoService {
     }
 
     private Comparator<ToDo> getComparator(Optional<String> sortBy) {
-        return sortBy.map(sort -> {
-            return switch (sort.toLowerCase()) {
-                case "priority" -> Comparator.comparing(ToDo::getPriority);
-                case "duedate" ->
-                        Comparator.comparing(ToDo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()));
-                default -> Comparator.comparing(ToDo::getPriority);
-            };
+        return sortBy.map(sort -> switch (sort.toLowerCase()) {
+            case "duedate" ->
+                    Comparator.comparing(ToDo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()));
+            default -> Comparator.comparing(ToDo::getPriority);
         }).orElse(Comparator.comparing(ToDo::getPriority));
     }
 
-    public Optional<ToDo> updateItem(String id, ToDoDTO request) {
+    public Optional<ToDo> updateItem(String id, ToDoUpdateDTO request) {
         Optional<ToDo> existingItem = getItem(id);
         existingItem.ifPresent(todo -> {
-            todo.setText(request.getText());
-            todo.setPriority(request.getPriority());
+
+            if (!Objects.isNull(request.getText())) {
+                todo.setText(request.getText());
+            }
+            if (request.getPriority() != null) {
+                todo.setPriority(request.getPriority());
+            }
             if (request.getDueDate() != null && !request.getDueDate().isEmpty()) {
                 todo.setDueDate(LocalDate.parse(request.getDueDate()));
-            } else {
-                todo.setDueDate(null);
             }
             logger.info("Item updated with ID: {}", id);
         });

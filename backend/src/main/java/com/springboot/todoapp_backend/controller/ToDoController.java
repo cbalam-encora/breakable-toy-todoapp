@@ -1,6 +1,7 @@
 package com.springboot.todoapp_backend.controller;
 
 import com.springboot.todoapp_backend.dtos.ToDoDTO;
+import com.springboot.todoapp_backend.dtos.ToDoUpdateDTO;
 import com.springboot.todoapp_backend.model.ToDo;
 import com.springboot.todoapp_backend.service.ToDoService;
 import jakarta.validation.Valid;
@@ -28,7 +29,7 @@ public class ToDoController {
     }
 
     @GetMapping
-    public ResponseEntity <List<ToDo>> getAllItems(
+    public ResponseEntity <List<ToDo>> getFilteredList(
             @RequestParam Optional<String> text,
             @RequestParam Optional<ToDo.Priority> priority,
             @RequestParam Optional<Boolean> done,
@@ -36,7 +37,7 @@ public class ToDoController {
             @RequestParam(defaultValue = "8") int pageSize,
             @RequestParam Optional<String> sortBy
     ){
-        List<ToDo> todoList = toDoService.getItemList(
+        List<ToDo> todoList = toDoService.getFilteredList(
                 text,
                 priority,
                 done,
@@ -57,7 +58,7 @@ public class ToDoController {
     @PutMapping("/{id}")
     public ResponseEntity<ToDo> updateItem(
             @PathVariable String id,
-            @Valid @RequestBody ToDoDTO request
+            @Valid @RequestBody ToDoUpdateDTO request
     ) {
         Optional<ToDo> updatedItem = toDoService.updateItem(id, request);
         return updatedItem.map(ResponseEntity::ok)
@@ -77,8 +78,5 @@ public class ToDoController {
         return updatedItem.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-
-
 
 }
