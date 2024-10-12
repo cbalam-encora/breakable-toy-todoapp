@@ -30,19 +30,17 @@ public class ToDoController {
 
     @GetMapping
     public ResponseEntity <List<ToDo>> getFilteredList(
-            @RequestParam Optional<String> text,
-            @RequestParam Optional<ToDo.Priority> priority,
-            @RequestParam Optional<Boolean> done,
+            @RequestParam(required = false) String text,
+            @RequestParam(required = false) ToDo.Priority priority,
+            @RequestParam(required = false) Boolean isDone,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int pageSize,
-            @RequestParam Optional<String> sortBy
+            @RequestParam(required = false) String sortBy
     ){
         List<ToDo> todoList = toDoService.getFilteredList(
                 text,
                 priority,
-                done,
+                isDone,
                 page,
-                pageSize,
                 sortBy
         );
 

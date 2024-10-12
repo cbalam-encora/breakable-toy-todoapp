@@ -34,25 +34,24 @@ public class ToDoService {
     }
 
     public List<ToDo> getFilteredList(
-            Optional<String> text,
-            Optional<ToDo.Priority> priority,
-            Optional<Boolean> done,
+            String text,
+            ToDo.Priority priority,
+            Boolean isDone,
             int page,
-            int size,
-            Optional<String> sortBy
+            String sortBy
     ) {
         return toDoList.stream()
                 // Text filter
-                .filter(todo -> text.map(t -> todo.getText().toLowerCase().contains(t.toLowerCase())).orElse(true))
+                .filter(todo -> text == null || todo.getText().toLowerCase().contains(text.toLowerCase()))
                 // Priority filter
-                .filter(todo -> priority.map(p -> todo.getPriority() == p).orElse(true))
+                .filter(todo -> priority == null || todo.getPriority() == priority)
                 // Status filter
-                .filter(todo -> done.map(d -> todo.isDone() == d).orElse(true))
+                .filter(todo -> isDone == null || todo.isDone() == isDone)
                 // Sort by priority and/or dueDate
                 .sorted(getComparator(sortBy))
                 // Pagination
-                .skip((long) page * size)
-                .limit(size)
+                .skip((long) page * Utilities.PAGE_SIZE)
+                .limit(Utilities.PAGE_SIZE)
                 .collect(Collectors.toList());
     }
 
@@ -70,12 +69,14 @@ public class ToDoService {
         return newItem;
     }
 
-    private Comparator<ToDo> getComparator(Optional<String> sortBy) {
-        return sortBy.map(sort -> switch (sort.toLowerCase()) {
-            case "duedate" ->
-                    Comparator.comparing(ToDo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()));
-            default -> Comparator.comparing(ToDo::getPriority);
-        }).orElse(Comparator.comparing(ToDo::getPriority));
+    private Comparator<ToDo> getComparator(String sortBy) {
+        if (sortBy != null && !sortBy.isEmpty()) {
+            if (sortBy.equalsIgnoreCase("duedate")) {
+                return Comparator.comparing(ToDo::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()));
+            }
+        }
+        //If sortBy is null || priority || invalid
+        return Comparator.comparing(ToDo::getPriority);
     }
 
     public Optional<ToDo> updateItem(String id, ToDoUpdateDTO request) {
