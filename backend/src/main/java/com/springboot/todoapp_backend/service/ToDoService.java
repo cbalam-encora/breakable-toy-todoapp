@@ -1,5 +1,6 @@
 package com.springboot.todoapp_backend.service;
 
+import com.springboot.todoapp_backend.Utilities.Constants;
 import com.springboot.todoapp_backend.dtos.ToDoDTO;
 import com.springboot.todoapp_backend.dtos.ToDoUpdateDTO;
 import com.springboot.todoapp_backend.model.ToDo;
@@ -50,8 +51,8 @@ public class ToDoService {
                 // Sort by priority and/or dueDate
                 .sorted(getComparator(sortBy))
                 // Pagination
-                .skip((long) page * Utilities.PAGE_SIZE)
-                .limit(Utilities.PAGE_SIZE)
+                .skip((long) page * Constants.PAGE_SIZE)
+                .limit(Constants.PAGE_SIZE)
                 .collect(Collectors.toList());
     }
 
