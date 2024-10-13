@@ -56,10 +56,13 @@ public class ToDoService {
     }
 
     public ToDo addItem(ToDoDTO request){
-        LocalDate dueDate = null;
+        LocalDate dueDate = Optional.ofNullable(request.getDueDate())
+                .filter(d -> !d.isEmpty())
+                .map(LocalDate::parse)
+                .orElse(null);
 
-        if(request.getDueDate() != null && !request.getDueDate().isEmpty()){
-            dueDate = LocalDate.parse(request.getDueDate());
+        if (dueDate != null && dueDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("The due date must be today or a future date.");
         }
 
         ToDo newItem = ToDo.builder()

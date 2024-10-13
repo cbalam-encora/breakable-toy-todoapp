@@ -1,10 +1,12 @@
 package com.springboot.todoapp_backend.controller;
 
+import com.springboot.todoapp_backend.Utilities.ApiResponse;
 import com.springboot.todoapp_backend.dtos.ToDoDTO;
 import com.springboot.todoapp_backend.dtos.ToDoUpdateDTO;
 import com.springboot.todoapp_backend.model.ToDo;
 import com.springboot.todoapp_backend.service.ToDoService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,9 +53,10 @@ public class ToDoController {
     }
 
     @PostMapping
-    public ResponseEntity<ToDo> addItem(@Valid @RequestBody ToDoDTO request){
+    public ResponseEntity<ApiResponse<ToDo>> addItem(@Valid @RequestBody ToDoDTO request){
         ToDo newItem = toDoService.addItem(request);
-        return ResponseEntity.ok(newItem);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("New item created: ", newItem));
     }
 
     @PutMapping("/{id}")
