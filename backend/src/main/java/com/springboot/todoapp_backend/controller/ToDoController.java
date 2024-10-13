@@ -34,13 +34,19 @@ public class ToDoController {
     }
 
     @GetMapping
-    public ResponseEntity <List<ToDo>> getFilteredList(
+    public ResponseEntity<ApiResponse<List<ToDo>>>  getFilteredList(
             @RequestParam(required = false) String text,
             @RequestParam(required = false) ToDo.Priority priority,
             @RequestParam(required = false) Boolean isDone,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) String sortBy
     ){
+
+        if (sortBy != null && !sortBy.equalsIgnoreCase("priority") && !sortBy.equalsIgnoreCase("dueDate")) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Invalid value for 'sortBy'. Accepted values are 'priority' or 'dueDate'"));
+        }
+
         List<ToDo> todoList = toDoService.getFilteredList(
                 text,
                 priority,
@@ -49,7 +55,13 @@ public class ToDoController {
                 sortBy
         );
 
-        return ResponseEntity.ok(todoList);
+        if (todoList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(
+                ApiResponse.success("List retrieved successfully", todoList)
+        );
     }
 
     @PostMapping

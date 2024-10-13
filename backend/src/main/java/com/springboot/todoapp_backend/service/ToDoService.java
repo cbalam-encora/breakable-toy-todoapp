@@ -40,6 +40,7 @@ public class ToDoService {
             int page,
             String sortBy
     ) {
+        int adjustedPage = page > 0 ? page - 1 : 0;
         return toDoList.stream()
                 // Text filter
                 .filter(todo -> text == null || todo.getText().toLowerCase().contains(text.toLowerCase()))
@@ -50,7 +51,7 @@ public class ToDoService {
                 // Sort by priority and/or dueDate
                 .sorted(getComparator(sortBy))
                 // Pagination
-                .skip((long) page * Constants.PAGE_SIZE)
+                .skip((long) adjustedPage * Constants.PAGE_SIZE)
                 .limit(Constants.PAGE_SIZE)
                 .collect(Collectors.toList());
     }

@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
                 String fieldName = invalidFormatException.getPath().get(0).getFieldName();
                 String acceptedValues = String.join(", ",
                         Arrays.toString(invalidFormatException.getTargetType().getEnumConstants()));
-                message = String.format("Invalid value for field '%s'. Accepted values are: %s",
+                message = String.format("Invalid value for field '%s'. The accepted values are: %s",
                         fieldName,
                         acceptedValues);
             }
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
     //Handler for invalid date
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<ApiResponse<Object>> handleDateTimeParseException(DateTimeParseException ex) {
-        String message = String.format("Invalid date format: %s. Please use the format 'yyyy-MM-dd'", ex.getParsedString());
+        String message = String.format("Invalid date format: %s. The correct format is 'yyyy-MM-dd'", ex.getParsedString());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(message, HttpStatus.BAD_REQUEST));
