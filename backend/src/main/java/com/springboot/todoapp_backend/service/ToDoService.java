@@ -20,7 +20,6 @@ public class ToDoService {
 
     public ToDoService(){
         this.toDoList = new ArrayList<>();
-
     }
 
     public Optional<ToDo> getItem(String id) {
@@ -63,7 +62,12 @@ public class ToDoService {
             dueDate = LocalDate.parse(request.getDueDate());
         }
 
-        ToDo newItem = new ToDo(request.getText(), request.getPriority(), dueDate);
+        ToDo newItem = ToDo.builder()
+                .text(request.getText())
+                .priority(request.getPriority())
+                .dueDate(dueDate)
+                .build();
+
         toDoList.add(newItem);
 
         logger.info("New item created with ID: {}", newItem.getId());
@@ -84,7 +88,7 @@ public class ToDoService {
         Optional<ToDo> existingItem = getItem(id);
         existingItem.ifPresent(todo -> {
 
-            if (!Objects.isNull(request.getText())) {
+            if (Objects.nonNull(request.getText())) {
                 todo.setText(request.getText());
             }
             if (request.getPriority() != null) {

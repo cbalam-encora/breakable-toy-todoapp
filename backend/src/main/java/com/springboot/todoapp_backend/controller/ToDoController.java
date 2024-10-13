@@ -21,8 +21,11 @@ public class ToDoController {
         this.toDoService = toDoService;
     }
 
-    @GetMapping("/todo")
-    public ResponseEntity<ToDo> getItem(@RequestParam String id){
+    @GetMapping("/{id}")
+    public ResponseEntity<ToDo> getItem(@PathVariable String id){
+        if (id == null || id.isEmpty()){
+            return ResponseEntity.badRequest().body(null);
+        }
         Optional<ToDo> item = toDoService.getItem(id);
         return item.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
