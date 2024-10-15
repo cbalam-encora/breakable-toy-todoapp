@@ -72,27 +72,57 @@ public class ToDoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ToDo> updateItem(
+    public ResponseEntity<ApiResponse<ToDo>> updateItem(
             @PathVariable String id,
             @Valid @RequestBody ToDoUpdateDTO request
     ) {
         Optional<ToDo> updatedItem = toDoService.updateItem(id, request);
-        return updatedItem.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return updatedItem.map(todo ->
+                ResponseEntity.ok(ApiResponse.success("Item successfully updated", todo))
+        ).orElseGet(() ->
+                ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error("Item not found", HttpStatus.NOT_FOUND))
+        );
+
     }
 
     @PostMapping("/{id}/done")
-    public ResponseEntity<ToDo> markAsDone(@PathVariable String id) {
-        Optional<ToDo> updatedItem = toDoService.markAsDone(id);
-        return updatedItem.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<ToDo>> markAsDone(@PathVariable String id) {
+
+        Optional<ToDo> existingItem = toDoService.getItem(id);
+
+        if (existingItem.isPresent()){
+            ToDo todo = existingItem.get();
+            if (todo.isDone()){
+                return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
+                        .body(ApiResponse.success("The item is already marked as done.", todo));
+            } else {
+                toDoService.markAsDone(id);
+                return ResponseEntity.ok(ApiResponse.success("Item successfully marked as done.", todo));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Item not found", HttpStatus.NOT_FOUND));
+        }
     }
 
     @PutMapping("/{id}/undone")
-    public ResponseEntity<ToDo> markAsUndone(@PathVariable String id) {
-        Optional<ToDo> updatedItem = toDoService.markAsUndone(id);
-        return updatedItem.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<ToDo>> markAsUndone(@PathVariable String id) {
+        Optional<ToDo> existingItem = toDoService.getItem(id);
+
+        if (existingItem.isPresent()){
+            ToDo todo = existingItem.get();
+            if (!todo.isDone()){
+                return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
+                        .body(ApiResponse.success("The item is already marked as undone.", todo));
+            } else {
+                toDoService.markAsDone(id);
+                return ResponseEntity.ok(ApiResponse.success("Item successfully marked as done.", todo));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Item not found", HttpStatus.NOT_FOUND));
+        }
     }
 
 }

@@ -90,16 +90,27 @@ public class ToDoService {
 
     public Optional<ToDo> updateItem(String id, ToDoUpdateDTO request) {
         Optional<ToDo> existingItem = getItem(id);
+
+        if (request.getText() == null && request.getPriority() == null && (request.getDueDate() == null || request.getDueDate().isEmpty())) {
+            throw new IllegalArgumentException("No valid fields provided for update");
+        }
+
         existingItem.ifPresent(todo -> {
 
             if (Objects.nonNull(request.getText())) {
                 todo.setText(request.getText());
             }
-            if (request.getPriority() != null) {
+            if (Objects.nonNull(request.getPriority())) {
                 todo.setPriority(request.getPriority());
             }
             if (request.getDueDate() != null && !request.getDueDate().isEmpty()) {
-                todo.setDueDate(LocalDate.parse(request.getDueDate()));
+                LocalDate newDueDate = LocalDate.parse(request.getDueDate());
+                if (newDueDate.isBefore(LocalDate.now())) {
+                    throw new IllegalArgumentException("The due date must be today or a future date.");
+                }
+                else {
+                    todo.setDueDate(newDueDate);
+                }
             }
             logger.info("Item updated with ID: {}", id);
         });
@@ -108,6 +119,7 @@ public class ToDoService {
 
     public Optional<ToDo> markAsDone(String id) {
         Optional<ToDo> existingItem = getItem(id);
+
         existingItem.ifPresent(todo -> {
             if (!todo.isDone()) {
                 todo.setDone(true);
