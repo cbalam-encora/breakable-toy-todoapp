@@ -4,4 +4,5 @@ export interface GetTodosParams {
     done?: boolean;
     page?: number;
     sortBy?: 'priority' | 'dueDate';
+    order?: 'asc' | 'desc';
   }

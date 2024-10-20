@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui-library";
+import { Card, Toaster } from "@/components/ui-library";
 
 import {
   ToDoTable,
@@ -27,6 +27,7 @@ function App() {
       </div>
 
       <ModalManager />
+      <Toaster />
     </>
   );
 }

@@ -9,14 +9,15 @@ import {
   Checkbox,
   TableHeader,
 } from "@/components/ui-library";
-
+import { GetTodosParams } from "@/interfaces/ToDoParams";
 import {
   FcHighPriority,
   FcMediumPriority,
   FcLowPriority,
 } from "react-icons/fc";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaSort } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { VscEmptyWindow } from "react-icons/vsc";
 
 import { ToDo } from "@/interfaces/ToDo";
 import { useModal, useTodoStore } from "@/hooks";
@@ -29,12 +30,37 @@ const ToDoTable = () => {
     onOpen("edit");
   };
 
-  const { todos, loading, error, currentPage, fetchFilteredTodos, toggleDone } =
-    useTodoStore();
+  const deleteToDo = (todo: ToDo) => {
+    setData(todo);
+    onOpen("delete");
+  };
+
+  const {
+    todos,
+    loading,
+    error,
+    currentPage,
+    params,
+    setParams,
+    fetchFilteredTodos,
+    toggleDone,
+  } = useTodoStore();
 
   useEffect(() => {
     fetchFilteredTodos();
   }, [fetchFilteredTodos, currentPage]);
+
+  const sortTable = (sortBy: "priority" | "dueDate") => {
+    const order =
+      params.sortBy === sortBy && params.order === "asc" ? "desc" : "asc";
+    const newParams: GetTodosParams = {
+      ...params,
+      sortBy,
+      order,
+    };
+    setParams(newParams);
+    fetchFilteredTodos();
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -42,20 +68,7 @@ const ToDoTable = () => {
   if (!todos || todos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12 text-gray-400 mb-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M9 12h6m-6 4h6m-7-4v-4h2l1-3h6l1 3h2v4m-9 4v-4m4 4v-4"
-          />
-        </svg>
+        <VscEmptyWindow className="h-12 w-12 text-gray-400 mb-4" />
         <p className="text-gray-500">No tasks found</p>
         <p className="text-sm text-gray-400">Start by adding a new task</p>
       </div>
@@ -84,8 +97,18 @@ const ToDoTable = () => {
           <TableRow>
             <TableCell></TableCell>
             <TableCell>Name</TableCell>
-            <TableCell>Priority</TableCell>
-            <TableCell>Due Date</TableCell>
+            <TableCell>
+              <Button variant="ghost" onClick={() => sortTable("priority")}>
+                Priority
+                <FaSort />
+              </Button>
+            </TableCell>
+            <TableCell>
+              <Button variant="ghost" onClick={() => sortTable("dueDate")}>
+                Due Date
+                <FaSort />
+              </Button>
+            </TableCell>
             <TableCell>Edit</TableCell>
             <TableCell>Delete</TableCell>
           </TableRow>
@@ -112,7 +135,7 @@ const ToDoTable = () => {
                 </Button>
               </TableCell>
               <TableCell>
-                <Button>
+                <Button onClick={() => deleteToDo(todo)}>
                   <MdDelete />
                 </Button>
               </TableCell>

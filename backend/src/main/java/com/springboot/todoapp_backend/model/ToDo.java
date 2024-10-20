@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -23,12 +24,12 @@ public class ToDo {
     @Builder.Default
     private boolean isDone = false;
 
-    private LocalDate doneDate;
+    private LocalDateTime doneDate;
 
     private Priority priority;
 
     @Builder.Default
-    private final LocalDate creationDate = LocalDate.now();
+    private final LocalDateTime creationDate = LocalDateTime.now();
 
     public enum Priority {
         HIGH, MEDIUM, LOW
