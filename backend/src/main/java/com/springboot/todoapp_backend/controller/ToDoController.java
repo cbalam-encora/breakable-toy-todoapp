@@ -39,7 +39,8 @@ public class ToDoController {
             @RequestParam(required = false) ToDo.Priority priority,
             @RequestParam(required = false) Boolean isDone,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) String sortBy
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String order
     ){
 
         if (sortBy != null && !sortBy.equalsIgnoreCase("priority") && !sortBy.equalsIgnoreCase("dueDate")) {
@@ -52,7 +53,8 @@ public class ToDoController {
                 priority,
                 isDone,
                 page,
-                sortBy
+                sortBy,
+                order
         );
 
         Integer totalItems = toDoService.getTotalItems(
