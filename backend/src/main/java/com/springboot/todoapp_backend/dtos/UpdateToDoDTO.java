@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ToDoUpdateDTO {
+public class UpdateToDoDTO {
     @Size(max = 120, message = "The description size is limited to 120 characters")
     private String text;
 

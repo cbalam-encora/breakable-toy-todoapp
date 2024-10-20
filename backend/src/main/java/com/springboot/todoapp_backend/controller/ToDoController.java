@@ -1,8 +1,8 @@
 package com.springboot.todoapp_backend.controller;
 
 import com.springboot.todoapp_backend.Utilities.ApiResponse;
-import com.springboot.todoapp_backend.dtos.ToDoDTO;
-import com.springboot.todoapp_backend.dtos.ToDoUpdateDTO;
+import com.springboot.todoapp_backend.dtos.NewToDoDTO;
+import com.springboot.todoapp_backend.dtos.UpdateToDoDTO;
 import com.springboot.todoapp_backend.model.ToDo;
 import com.springboot.todoapp_backend.service.ToDoService;
 import jakarta.validation.Valid;
@@ -55,17 +55,24 @@ public class ToDoController {
                 sortBy
         );
 
+        Integer totalItems = toDoService.getTotalItems(
+                text,
+                priority,
+                isDone,
+                sortBy
+        );
+
         if (todoList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.ok(
-                ApiResponse.success("List retrieved successfully", todoList)
+                ApiResponse.successWithTotalItems("List retrieved successfully", todoList, totalItems)
         );
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ToDo>> addItem(@Valid @RequestBody ToDoDTO request){
+    public ResponseEntity<ApiResponse<ToDo>> addItem(@Valid @RequestBody NewToDoDTO request){
         ToDo newItem = toDoService.addItem(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("New item created: ", newItem));
@@ -74,7 +81,7 @@ public class ToDoController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ToDo>> updateItem(
             @PathVariable String id,
-            @Valid @RequestBody ToDoUpdateDTO request
+            @Valid @RequestBody UpdateToDoDTO request
     ) {
         Optional<ToDo> updatedItem = toDoService.updateItem(id, request);
         return updatedItem.map(todo ->
@@ -116,7 +123,7 @@ public class ToDoController {
                 return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
                         .body(ApiResponse.success("The item is already marked as undone.", todo));
             } else {
-                toDoService.markAsDone(id);
+                toDoService.markAsUndone(id);
                 return ResponseEntity.ok(ApiResponse.success("Item successfully marked as done.", todo));
             }
         } else {

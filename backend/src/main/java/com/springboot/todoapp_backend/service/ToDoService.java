@@ -1,8 +1,8 @@
 package com.springboot.todoapp_backend.service;
 
 import com.springboot.todoapp_backend.Utilities.Constants;
-import com.springboot.todoapp_backend.dtos.ToDoDTO;
-import com.springboot.todoapp_backend.dtos.ToDoUpdateDTO;
+import com.springboot.todoapp_backend.dtos.NewToDoDTO;
+import com.springboot.todoapp_backend.dtos.UpdateToDoDTO;
 import com.springboot.todoapp_backend.model.ToDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +56,24 @@ public class ToDoService {
                 .collect(Collectors.toList());
     }
 
-    public ToDo addItem(ToDoDTO request){
-        LocalDate dueDate = Optional.ofNullable(request.getDueDate())
+    public Integer getTotalItems(
+            String text,
+            ToDo.Priority priority,
+            Boolean isDone,
+            String sortBy
+    ) {
+        List<ToDo> filteredTodos = toDoList.stream()
+                .filter(todo -> text == null || todo.getText().toLowerCase().contains(text.toLowerCase()))
+                .filter(todo -> priority == null || todo.getPriority() == priority)
+                .filter(todo -> isDone == null || todo.isDone() == isDone)
+                .sorted(getComparator(sortBy))
+                .toList();
+
+        return filteredTodos.size();
+    }
+
+    public ToDo addItem(NewToDoDTO newToDo){
+        LocalDate dueDate = Optional.ofNullable(newToDo.getDueDate())
                 .filter(d -> !d.isEmpty())
                 .map(LocalDate::parse)
                 .orElse(null);
@@ -67,8 +83,8 @@ public class ToDoService {
         }
 
         ToDo newItem = ToDo.builder()
-                .text(request.getText())
-                .priority(request.getPriority())
+                .text(newToDo.getText())
+                .priority(newToDo.getPriority())
                 .dueDate(dueDate)
                 .build();
 
@@ -88,7 +104,7 @@ public class ToDoService {
         return Comparator.comparing(ToDo::getPriority);
     }
 
-    public Optional<ToDo> updateItem(String id, ToDoUpdateDTO request) {
+    public Optional<ToDo> updateItem(String id, UpdateToDoDTO request) {
         Optional<ToDo> existingItem = getItem(id);
 
         if (request.getText() == null && request.getPriority() == null && (request.getDueDate() == null || request.getDueDate().isEmpty())) {

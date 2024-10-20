@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ToDoDTO {
+public class NewToDoDTO {
 
     @NotBlank(message = "A description of the task is required")
     @Size(max = 120, message = "The description size is limited to 120 characters")
