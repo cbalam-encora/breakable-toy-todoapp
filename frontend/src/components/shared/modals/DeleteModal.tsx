@@ -21,7 +21,7 @@ const DeleteModal = ({
 }) => {
 
   const { fetchFilteredTodos } = useTodoStore();
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   const handleDelete = async () => {
     try {

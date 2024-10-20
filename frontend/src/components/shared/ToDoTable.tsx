@@ -10,17 +10,14 @@ import {
   TableHeader,
 } from "@/components/ui-library";
 import { GetTodosParams } from "@/interfaces/ToDoParams";
-import {
-  FcHighPriority,
-  FcMediumPriority,
-  FcLowPriority,
-} from "react-icons/fc";
 import { FaEdit, FaSort } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { VscEmptyWindow } from "react-icons/vsc";
 
 import { ToDo } from "@/interfaces/ToDo";
 import { useModal, useTodoStore } from "@/hooks";
+import EmptyTable from "./table/EmptyTable";
+import { RenderPriorityIcon } from "./table/RenderPriorityIcon";
+import { useToast } from "@/hooks/ui-library/use-toast";
 
 const ToDoTable = () => {
   const { onOpen, setData } = useModal();
@@ -46,6 +43,8 @@ const ToDoTable = () => {
     toggleDone,
   } = useTodoStore();
 
+  const { toast } = useToast();
+
   useEffect(() => {
     fetchFilteredTodos();
   }, [fetchFilteredTodos, currentPage]);
@@ -62,34 +61,29 @@ const ToDoTable = () => {
     fetchFilteredTodos();
   };
 
+  const toggleCheckbox = async (id: string, done: boolean) => {
+    try {
+      await toggleDone(id, done);
+      toast({
+        title: "Task updated",
+        description: "Task status has been updated.",
+        duration: 5000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occurred while updating the task. " + error,
+        duration: 5000,
+      });
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   if (!todos || todos.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <VscEmptyWindow className="h-12 w-12 text-gray-400 mb-4" />
-        <p className="text-gray-500">No tasks found</p>
-        <p className="text-sm text-gray-400">Start by adding a new task</p>
-      </div>
-    );
+    return <EmptyTable />;
   }
-
-  const renderPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case "HIGH":
-        return <FcHighPriority title="High Priority" className="text-2xl" />;
-      case "MEDIUM":
-        return (
-          <FcMediumPriority title="Medium Priority" className="text-2xl" />
-        );
-      case "LOW":
-        return <FcLowPriority title="Low Priority" className="text-2xl" />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <>
       <Table className="w-full border rounded-lg">
@@ -120,13 +114,13 @@ const ToDoTable = () => {
                 <Checkbox
                   checked={todo.done}
                   onCheckedChange={(checked) =>
-                    toggleDone(todo.id, checked === true)
+                    toggleCheckbox(todo.id, checked === true)
                   }
                 />
               </TableCell>
               <TableCell className="font-medium">{todo.text}</TableCell>
               <TableCell className="align-middle">
-                {renderPriorityIcon(todo.priority)}
+                {RenderPriorityIcon(todo.priority)}
               </TableCell>
               <TableCell>{todo.dueDate}</TableCell>
               <TableCell>
