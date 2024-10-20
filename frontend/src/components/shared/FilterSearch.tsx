@@ -10,9 +10,14 @@ import {
   Button,
 } from "@/components/ui-library";
 
+import {
+  FcHighPriority,
+  FcLowPriority,
+  FcMediumPriority,
+} from "react-icons/fc";
+
 import { GetTodosParams } from "@/interfaces/ToDoParams";
 import useTodoStore from "@/hooks/useToDoStore";
-import { FcHighPriority, FcLowPriority, FcMediumPriority } from "react-icons/fc";
 
 const FilterSearch = () => {
   const [text, setText] = useState<string | undefined>(undefined);

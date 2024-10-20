@@ -1,5 +1,3 @@
-// #region Imports
-
 import {
   Dialog,
   DialogContent,
@@ -34,8 +32,6 @@ import { ToDo } from "@/interfaces/ToDo";
 import { useTodoStore } from "@/hooks";
 import { useToast } from "@/hooks/ui-library/use-toast";
 
-// #endregion
-
 const FormSchema = z.object({
   taskName: z
     .string()
@@ -52,8 +48,6 @@ const FormSchema = z.object({
         if (!date) return true;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        console.log("Stored date: ", date);
-        console.log("Today: ", today);
         return date >= today;
       },
       { message: "Due Date cannot be earlier than today." }

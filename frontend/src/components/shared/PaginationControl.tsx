@@ -8,9 +8,7 @@ import {
 } from "@/components/ui-library";
 import useTodoStore from "@/hooks/useToDoStore";
 
-
 const PaginationControl = () => {
-
   const { currentPage, pageSize, totalItems, setPage } = useTodoStore();
   const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -43,32 +41,31 @@ const PaginationControl = () => {
     return pages;
   };
 
-
   return (
     <>
       <Pagination>
-      <PaginationContent>
-        <PaginationPrevious
-          onClick={handlePreviousPage}
-          aria-disabled={currentPage === 1}
-          className={
-            currentPage <= 1 ? "pointer-events-none opacity-50" : undefined
-          }
+        <PaginationContent>
+          <PaginationPrevious
+            onClick={handlePreviousPage}
+            aria-disabled={currentPage === 1}
+            className={
+              currentPage <= 1 ? "pointer-events-none opacity-50" : undefined
+            }
+          />
 
-        />
-        
-        {generatePaginationLinks()}
+          {generatePaginationLinks()}
 
-        <PaginationNext
-          onClick={handleNextPage}
-          aria-disabled={currentPage === totalPages}
-          className={
-            currentPage === totalPages ? "pointer-events-none opacity-50" : undefined
-          }
-
-        />
-      </PaginationContent>
-    </Pagination>
+          <PaginationNext
+            onClick={handleNextPage}
+            aria-disabled={currentPage === totalPages}
+            className={
+              currentPage === totalPages
+                ? "pointer-events-none opacity-50"
+                : undefined
+            }
+          />
+        </PaginationContent>
+      </Pagination>
     </>
   );
 };

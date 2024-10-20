@@ -19,7 +19,6 @@ const DeleteModal = ({
   todo: ToDo;
   onClose: () => void;
 }) => {
-
   const { fetchFilteredTodos } = useTodoStore();
   const { toast } = useToast();
 
@@ -29,7 +28,7 @@ const DeleteModal = ({
       await fetchFilteredTodos();
       toast({
         title: "Task Deleted Successfully",
-      })
+      });
 
       onClose();
     } catch (error) {
