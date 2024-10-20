@@ -6,6 +6,7 @@ import {
   ModalManager,
   Stats,
   AddItemButton,
+  PaginationControl,
 } from "@/components/shared";
 
 function App() {
@@ -15,7 +16,12 @@ function App() {
         <Card className="w-full max-w-4xl p-4">
           <FilterSearch />
           <AddItemButton />
-          <ToDoTable />
+          <div className="min-h-[600px]">
+            <ToDoTable />
+          </div>
+          <div className="my-4">
+            <PaginationControl />
+          </div>
           <Stats />
         </Card>
       </div>

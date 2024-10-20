@@ -18,7 +18,6 @@ import { MdDelete } from "react-icons/md";
 import useModal from "@/hooks/useModal";
 import useTodoStore from "@/hooks/useToDoStore";
 import { useEffect } from "react";
-import PaginationControl from "./PaginationControl";
 
 const ToDoTable = () => {
   const { onOpen, setData } = useModal();
@@ -32,7 +31,6 @@ const ToDoTable = () => {
     todos,
     loading,
     error,
-    totalItems,
     currentPage,
     fetchFilteredTodos,
     toggleDone,
@@ -60,10 +58,6 @@ const ToDoTable = () => {
     }
   };
 
-  const handleCheckChange = (id: string, checked: boolean) => {
-    toggleDone(id, checked);
-  };
-
   return (
     <>
       <Table className="w-full border rounded-lg">
@@ -84,7 +78,7 @@ const ToDoTable = () => {
                 <Checkbox
                   checked={todo.done}
                   onCheckedChange={(checked) =>
-                    handleCheckChange(todo.id, checked === true)
+                    toggleDone(todo.id, checked === true)
                   }
                 />
               </TableCell>
@@ -107,9 +101,6 @@ const ToDoTable = () => {
           ))}
         </TableBody>
       </Table>
-      <div className="my-4">
-        <PaginationControl totalItems={totalItems} />
-      </div>
     </>
   );
 };

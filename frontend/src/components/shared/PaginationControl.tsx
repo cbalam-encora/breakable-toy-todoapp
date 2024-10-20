@@ -8,12 +8,10 @@ import {
 } from "@/components/ui/pagination";
 import useTodoStore from "@/hooks/useToDoStore";
 
-interface PaginationControlProps {
-  totalItems: number;
-}
 
-const PaginationControl = ({ totalItems }: PaginationControlProps) => {
-  const { currentPage, pageSize, setPage } = useTodoStore();
+const PaginationControl = () => {
+
+  const { currentPage, pageSize, totalItems, setPage } = useTodoStore();
   const totalPages = Math.ceil(totalItems / pageSize);
 
   const handleNextPage = () => {
