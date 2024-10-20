@@ -167,6 +167,18 @@ public class ToDoService {
         return existingItem;
     }
 
+    public Optional<ToDo> deleteItem(String id) {
+        Optional<ToDo> existingItem = getItem(id);
+
+        existingItem.ifPresent(todo -> {
+            toDoList.remove(todo);
+            logger.info("Item deleted with ID: {}", id);
+        });
+
+        return existingItem;
+    }
+
+
 
 
 

@@ -134,4 +134,18 @@ public class ToDoController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteItem(@PathVariable String id) {
+        Optional<ToDo> deletedItem = toDoService.deleteItem(id);
+
+        if (deletedItem.isPresent()) {
+            return ResponseEntity.ok(ApiResponse.success("Item successfully deleted", null));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Item not found", HttpStatus.NOT_FOUND));
+        }
+    }
+
+
+
 }
