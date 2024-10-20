@@ -23,14 +23,55 @@ import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ToDoPayload } from "@/interfaces/ToDoPayload";
+import { createTodo } from "@/services/ToDoService";
+import { useTodoStore } from "@/hooks";
 
+const FormSchema = z.object({
+  taskName: z
+    .string()
+    .min(1, { message: "Task Name is required." })
+    .max(120, { message: "Task Name must not exceed 120 characters." }),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"], {
+    message: "Priority is required.",
+  }),
+  dueDate: z.date().optional(),
+});
 
 const CreateModal = ({ onClose }: { onClose: () => void }) => {
-  
   const [date, setDate] = useState<Date>();
+  const { fetchFilteredTodos } = useTodoStore();
 
-  const handleCreate = () => {
-    onClose();
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      taskName: "",
+      priority: undefined,
+      dueDate: undefined,
+    },
+  });
+
+  const handleCreate = async (data: z.infer<typeof FormSchema>) => {
+    const toDoPayload: ToDoPayload = {
+      text: data.taskName,
+      priority: data.priority.toUpperCase() as "HIGH" | "MEDIUM" | "LOW",
+      dueDate: date ? format(date, "yyyy-MM-dd") : undefined,
+    };
+    console.log("Payload to send:", toDoPayload);
+    try {
+      await createTodo(toDoPayload);
+
+      await fetchFilteredTodos();
+
+      form.reset();
+      setDate(undefined);
+      onClose();
+    } catch (error) {
+      console.error("Error creating ToDo:", error);
+    }
   };
 
   return (
@@ -44,21 +85,35 @@ const CreateModal = ({ onClose }: { onClose: () => void }) => {
         </DialogHeader>
 
         <Label>Task Name</Label>
-        <Input className="mb-4" placeholder="Task name" />
+        <Input {...form.register("taskName")} placeholder="Task name" />
+        {form.formState.errors.taskName && (
+          <p className="text-red-500">
+            {form.formState.errors.taskName.message}
+          </p>
+        )}
 
         <Label>Priority</Label>
-        <Select>
+        <Select
+          onValueChange={(value) =>
+            form.setValue("priority", value as "LOW" | "MEDIUM" | "HIGH")
+          }
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="low">Low</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="high">High</SelectItem>
+            <SelectItem value="LOW">Low</SelectItem>
+            <SelectItem value="MEDIUM">Medium</SelectItem>
+            <SelectItem value="HIGH">High</SelectItem>
           </SelectContent>
         </Select>
+        {form.formState.errors.priority && (
+          <p className="text-red-500">
+            {form.formState.errors.priority.message}
+          </p>
+        )}
 
-        <Label className="mt-4">Due Date</Label>
+        <Label className="mt-4">Due Date (Optional)</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -76,14 +131,17 @@ const CreateModal = ({ onClose }: { onClose: () => void }) => {
             <Calendar
               mode="single"
               selected={date}
-              onSelect={setDate}
+              onSelect={(selectedDate) => {
+                setDate(selectedDate);
+                form.setValue("dueDate", selectedDate || undefined);
+              }}
               initialFocus
             />
           </PopoverContent>
         </Popover>
-        
+
         <DialogFooter>
-          <Button onClick={handleCreate}>Create</Button>
+          <Button onClick={form.handleSubmit(handleCreate)}>Create</Button>
           <Button onClick={onClose} variant="secondary">
             Cancel
           </Button>
