@@ -8,7 +8,7 @@ import {
   SelectContent,
   SelectItem,
   Button,
-} from "@/components/ui";
+} from "@/components/ui-library";
 
 import { GetTodosParams } from "@/interfaces/ToDoParams";
 import useTodoStore from "@/hooks/useToDoStore";

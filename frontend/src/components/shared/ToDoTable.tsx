@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import {
   Table,
   TableBody,
@@ -6,8 +8,8 @@ import {
   Button,
   Checkbox,
   TableHeader,
-} from "@/components/ui";
-import { ToDo } from "@/interfaces/ToDo";
+} from "@/components/ui-library";
+
 import {
   FcHighPriority,
   FcMediumPriority,
@@ -15,9 +17,9 @@ import {
 } from "react-icons/fc";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import useModal from "@/hooks/useModal";
-import useTodoStore from "@/hooks/useToDoStore";
-import { useEffect } from "react";
+
+import { ToDo } from "@/interfaces/ToDo";
+import { useModal, useTodoStore } from "@/hooks";
 
 const ToDoTable = () => {
   const { onOpen, setData } = useModal();
@@ -27,14 +29,8 @@ const ToDoTable = () => {
     onOpen("edit");
   };
 
-  const {
-    todos,
-    loading,
-    error,
-    currentPage,
-    fetchFilteredTodos,
-    toggleDone,
-  } = useTodoStore();
+  const { todos, loading, error, currentPage, fetchFilteredTodos, toggleDone } =
+    useTodoStore();
 
   useEffect(() => {
     fetchFilteredTodos();
@@ -43,16 +39,39 @@ const ToDoTable = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
-  if (!todos || todos.length === 0) return <p>No items available.</p>;
+  if (!todos || todos.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-12 w-12 text-gray-400 mb-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M9 12h6m-6 4h6m-7-4v-4h2l1-3h6l1 3h2v4m-9 4v-4m4 4v-4"
+          />
+        </svg>
+        <p className="text-gray-500">No tasks found</p>
+        <p className="text-sm text-gray-400">Start by adding a new task</p>
+      </div>
+    );
+  }
 
   const renderPriorityIcon = (priority: string) => {
     switch (priority) {
       case "HIGH":
-        return <FcHighPriority title="High Priority" className="text-2xl"/>;
+        return <FcHighPriority title="High Priority" className="text-2xl" />;
       case "MEDIUM":
-        return <FcMediumPriority title="Medium Priority" className="text-2xl"/>;
+        return (
+          <FcMediumPriority title="Medium Priority" className="text-2xl" />
+        );
       case "LOW":
-        return <FcLowPriority title="Low Priority" className="text-2xl"/>;
+        return <FcLowPriority title="Low Priority" className="text-2xl" />;
       default:
         return null;
     }

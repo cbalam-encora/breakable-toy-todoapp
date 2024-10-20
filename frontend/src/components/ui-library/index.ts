@@ -5,3 +5,7 @@ export * from './select';
 export * from './button';
 export * from './table';
 export * from './checkbox';
+export * from './calendar';
+export * from './dialog';
+export * from './pagination';
+export * from './popover';
